@@ -1,2 +1,2 @@
 # jaka_igrca
-tm  worms neki možina je gej
+tm  worms neki možina je car majkemi
