@@ -46,6 +46,8 @@ class osebek(pygame.sprite.Sprite):
         self.hitrost_x=0
     def skoci(self):
         self.hitrost_y -=10
+        if self.hitrost_y < -20:
+            self.hitrost_y = -20
         
 class zadeva(pygame.sprite.Sprite):
     def __init__(self):
