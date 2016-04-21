@@ -12,51 +12,53 @@ class osebek(pygame.sprite.Sprite):
         self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
         self.image.fill((238,90,255))
         self.rect=self.image.get_rect()
-
+        self.ovire = ovire
         self.hitrost_x=0
         self.hitrost_y=0
     def update(self):
         #smer X
+        self.rect.x += self.hitrost_x
+        self.rect.x %= SIRINA_EKRANA
         #smer Y
-        if self.hitrost<20:
+        if self.hitrost_y<20:
             self.hitrost_y+=0.4
-        self.rect_y += self.hitrost_y
-        self.rect_y %= VISINA_EKRANA
+        self.rect.y += self.hitrost_y
+        self.rect.y %= VISINA_EKRANA
         if self.ovire:
-            trki=pygame.spritecollide(self,self.ovire,False)
+            trki=pygame.sprite.spritecollide(self,self.ovire,False)
             for ovira in trki:
                 if self.hitrost_y < 0:
                     self.rect.top=ovira.rect.bottom
-                if self.hitrost_x > 0:
+                if self.hitrost_y > 0:
                     self.rect.bottom=ovira.rect.top
                 self.hitrost_y=0
 
-        def pojdi_levo(self):
-            self.desno=False;
-            self.hitrost_x = -4;
-            self.hodim=true
-        def pojdi_desno(self):
-            self.desno=True;
-            self.hitrost_x = 4;
-            self.hodim=True;
-        def stop(self):
-            self.hodim=False;
-            self.hitrost_x=0
-        def skoci(self):
-            self.hitrost_y -=10
+    def pojdi_levo(self):
+        self.desno=False;
+        self.hitrost_x = -4;
+        self.hodim=True
+    def pojdi_desno(self):
+        self.desno=True;
+        self.hitrost_x = 4;
+        self.hodim=True;
+    def stop(self):
+        self.hodim=False;
+        self.hitrost_x=0
+    def skoci(self):
+        self.hitrost_y -=10
         
 class zadeva(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image=pygame.Surface((SIRINA_EKRANA,VISINA_EKRANA/2))
+        self.image=pygame.Surface((SIRINA_EKRANA,VISINA_EKRANA/4))
         self.image.fill((150,150,150))
         self.rect=self.image.get_rect()
         self.rect.x=0
-        self.rect.y=VISINA_EKRANA/2
+        self.rect.y=3*VISINA_EKRANA/4
 
 def main():
     ekran=pygame.display.set_mode([SIRINA_EKRANA,VISINA_EKRANA])
-    ekran.fill((255,255,255))
+    
     ozadje=zadeva()
     skupina=pygame.sprite.Group()
     skupina.add(ozadje)
@@ -67,11 +69,29 @@ def main():
     konec_zanke=False
     while not konec_zanke:
         ura.tick(60)
+        # User input
         for dogodek in pygame.event.get():
-            if dogodek.type== pygame.QUIT:
-                konec_zanke=True
+            if dogodek.type == pygame.QUIT:
+                konec_zanke = True
+            elif dogodek.type == pygame.KEYDOWN:
+                if dogodek.key == pygame.K_LEFT:
+                    crv.pojdi_levo()
+                elif dogodek.key == pygame.K_RIGHT:
+                    crv.pojdi_desno()
+                elif dogodek.key == pygame.K_UP:
+                    crv.skoci()
+            if dogodek.type == pygame.KEYUP:
+                if dogodek.key == pygame.K_LEFT and crv.hitrost_x < 0:
+                    crv.stop()
+                elif dogodek.key == pygame.K_RIGHT and crv.hitrost_x > 0:
+                    crv.stop()
+        # Zganjaj fiziko
+        crvi.update()
         
+        # Risanje
+        ekran.fill((255,255,255))
         skupina.draw(ekran)
+        
         crvi.draw(ekran)
         pygame.display.flip()
     pygame.quit()
