@@ -1,11 +1,13 @@
 import pygame
 from math import sin, cos, pi
-
+920
 SIRINA_EKRANA= 800
 VISINA_EKRANA= 600
 
+
 class izstrelek(pygame.sprite.Sprite):
-    def __init__(self, polozaj_x, polozaj_y,smer_strela,hitrost_strela,crv_hitrost_x,crv_hitrost_y,ovire=None):
+    def __init__(self, polozaj_x, polozaj_y, smer_strela,
+                 hitrost_strela,crv_hitrost_x,crv_hitrost_y,ovire=None):
         super().__init__()
         sirina=5
         visina=5
@@ -24,13 +26,13 @@ class izstrelek(pygame.sprite.Sprite):
     def update(self):
         #smer x
         self.rect.x += self.hitrost_x
-        #smer y
+            #smer y
         self.hitrost_y += 0.4
         self.rect.y += self.hitrost_y
         #ubije metek ce je izven zaslona
-        if (self.rect.x > SIRINA_EKRANA) or (self.rect.x < 0):
+        if (self.rect.x >= SIRINA_EKRANA) or (self.rect.x <= 0):
             self.kill();
-        if (self.rect.y > VISINA_EKRANA) or (self.rect.y < -100):
+        if (self.rect.y >= VISINA_EKRANA) or (self.rect.y <= -100):
             self.kill();
         #ubije metek ob trku z tlemi
         if self.ovire:
@@ -72,12 +74,27 @@ class osebek(pygame.sprite.Sprite):
         if self.rect.x < 0:
             self.rect.x = 0;
 
+        if self.ovire:
+            trki=pygame.sprite.spritecollide(self,self.ovire,False)
+            for ovira in trki:
+                if self.hitrost_x < 0:
+                    self.rect.left = ovira.rect.right
+               #     self.ground = True
+                if self.hitrost_x > 0:
+                    self.rect.right = ovira.rect.left
+              #      self.ground = True;
+                self.hitrost_x = 0
+
+
         if self.ground and not self.hodim:
             self.hitrost_x = 0;
             
-        #smer Y
-        if self.hitrost_y<20 and (not self.ground):
-            self.hitrost_y+=0.4
+        #smer Yd
+        if 0 == self.hitrost_y:
+            self.hitrost_y = 2
+        elif self.hitrost_y < 20:
+            self.hitrost_y += 0.4
+        old_y = self.rect.y
         
             
             
@@ -91,59 +108,88 @@ class osebek(pygame.sprite.Sprite):
                     self.rect.bottom=ovira.rect.top
                     self.ground=True;
                 self.hitrost_y=0
-                
+        # Preveri ce je na tleh
+        self.rect.y += 2
+        if self.ovire:
+            trki=pygame.sprite.spritecollide(self,self.ovire,False)
+            if len(trki):
+                self.ground=True;
+            else:
+                self.ground=False;  
+        self.rect.y -= 2
         #za metek
         self.smer_strela +=self.hitrost_vrtenja
         self.smer_strela = self.smer_strela % 360;
         self.hitrost_strela += self.hitrost_hitrosti_strela
+        if self.hitrost_strela>1:
+            self.hitrost_strela = 1
+        if self.hitrost_strela < 0:
+            self.hitrost_strela = 0
     def pojdi_levo(self):
         if self.ground:
             self.desno=False;
             self.hitrost_x = -4;
             self.hodim=True
+
     def pojdi_desno(self):
         if self.ground:
-            self.desno=True;
-            self.hitrost_x = 4;
-            self.hodim=True;
+            self.desno=True
+            self.hitrost_x = 4
+            self.hodim=True
+
     def stop(self):        
         self.hodim=False;
         if self.ground:
             self.hitrost_x=0
+
     def skoci(self):
+
         if self.ground:
             self.hitrost_y = -10
             self.ground= False;
-            if self.hitrost_y < -20:
-                self.hitrost_y = -20
+                
     def ustreli(self): #DODELAT
         
         metek=izstrelek(self.rect.right, self.rect.y,self.smer_strela,self.hitrost_strela,self.hitrost_x,self.hitrost_y,self.ovire)
         self.metki.add(metek)
         
 class zadeva(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, x, y, sirina, visina):
         super().__init__()
-        self.image=pygame.Surface((SIRINA_EKRANA,VISINA_EKRANA/4))
+        self.image=pygame.Surface((sirina, visina))
         self.image.fill((150,150,150))
         self.rect=self.image.get_rect()
-        self.rect.x=0
-        self.rect.y=3*VISINA_EKRANA/4
+        self.rect.x = x
+        self.rect.y = y
 
 
 def main():
+    pygame.font.init()
     ekran=pygame.display.set_mode([SIRINA_EKRANA,VISINA_EKRANA])
     pygame.display.set_caption("legendarna igrca")
 
-    ozadje=zadeva()
+    ozadje = zadeva(0, 3*VISINA_EKRANA/4, SIRINA_EKRANA,VISINA_EKRANA/4)
+    ploscad = zadeva(50, 350, 200, 20)
+    ploscad2= zadeva(500, 50, 1, 3000)
+
     skupina=pygame.sprite.Group()
     skupina.add(ozadje)
+    skupina.add(ploscad)
+    skupina.add(ploscad2)
     metki=pygame.sprite.Group()
     crvi=pygame.sprite.Group()
     crv=osebek(skupina,metki)
     crvi.add(crv)
+    crv2 = osebek(skupina,metki)
     ura=pygame.time.Clock()
+    crvi.add(crv2)
     konec_zanke=False
+
+
+    font = pygame.font.Font(None, 36)
+    text = font.render("ground: "+str(crv.ground), 1, (10, 10, 10))
+    textpos = text.get_rect()
+    textpos.centerx = ekran.get_rect().centerx
     while not konec_zanke:
         ura.tick(60)
         # User input
@@ -185,7 +231,8 @@ def main():
         metki.update()
         # Risanje
         ekran.fill((255,255,255))
-        
+        text = font.render("ground: "+str(crv.ground), 1, (10, 10, 10))
+        ekran.blit(text, textpos)
         skupina.draw(ekran) #narise ozadje
         crvi.draw(ekran) #narise crve
         metki.draw(ekran); #narise metke
@@ -194,6 +241,6 @@ def main():
         #debug
         
         print("crv.hitrost_y: "+str(crv.hitrost_y));
-        print("crv.hitrost_x: "+str(crv.hitrost_x));
+       # print("crv.hitrost_x: "+str(crv.hitrost_x));
     pygame.quit()
 main()
