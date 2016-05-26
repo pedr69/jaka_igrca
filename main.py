@@ -15,12 +15,12 @@ def main():
     skupina=pygame.sprite.Group()
     skupina.add(ozadje)
     skupina.add(ploscad)
-    skupina.add(ploscad2)
+    #skupina.add(ploscad2)
     metki=pygame.sprite.Group()
     crvi=pygame.sprite.Group()
     crv=osebek(skupina,metki)
     crvi.add(crv)
-    crv2 = osebek(skupina,metki)
+    crv2 = osebek(skupina,metki,(255, 0, 102))
     ura=pygame.time.Clock()
     crvi.add(crv2)
     konec_zanke=False
@@ -37,6 +37,7 @@ def main():
             if dogodek.type == pygame.QUIT:
                 konec_zanke = True
             elif dogodek.type == pygame.KEYDOWN:
+                # Player 1
                 if dogodek.key == pygame.K_a:
                     crv.pojdi_levo()
                 elif dogodek.key == pygame.K_SPACE:
@@ -45,26 +46,53 @@ def main():
                     crv.pojdi_desno()
                 elif dogodek.key == pygame.K_w:
                     crv.skoci()
-                elif dogodek.key == pygame.K_LEFT:
+                elif dogodek.key == pygame.K_h:
                     crv.hitrost_vrtenja = 1;
-                elif dogodek.key == pygame.K_RIGHT:
+                elif dogodek.key == pygame.K_k:
                     crv.hitrost_vrtenja = -1;
-                elif dogodek.key == pygame.K_UP:
+                elif dogodek.key == pygame.K_u:
                     crv.hitrost_hitrosti_strela = 0.01
-                elif dogodek.key == pygame.K_DOWN:
+                elif dogodek.key == pygame.K_j:
                     crv.hitrost_hitrosti_strela = -0.01
+                # Player 2
+                if dogodek.key == pygame.K_LEFT:
+                    crv2.pojdi_levo()
+                elif dogodek.key == pygame.K_KP0:
+                    crv2.ustreli()
+                elif dogodek.key == pygame.K_RIGHT:                                                  
+                    crv2.pojdi_desno()
+                elif dogodek.key == pygame.K_UP:
+                    crv2.skoci()
+                elif dogodek.key == pygame.K_KP1:
+                    crv2.hitrost_vrtenja = 1;
+                elif dogodek.key == pygame.K_KP3:
+                    crv2.hitrost_vrtenja = -1;
+                elif dogodek.key == pygame.K_KP5:
+                    crv2.hitrost_hitrosti_strela = 0.01
+                elif dogodek.key == pygame.K_KP2:
+                    crv2.hitrost_hitrosti_strela = -0.01
             if dogodek.type == pygame.KEYUP:
+                # Player 1
                 if dogodek.key == pygame.K_a and crv.hitrost_x < 0:
                     crv.stop()
                 elif dogodek.key == pygame.K_d and crv.hitrost_x > 0:
                     crv.stop()
-                elif dogodek.key == pygame.K_UP or dogodek.key == pygame.K_DOWN: 
+                elif dogodek.key == pygame.K_u or dogodek.key == pygame.K_j: 
                     crv.hitrost_hitrosti_strela = 0
-                elif dogodek.key == pygame.K_LEFT or dogodek.key == pygame.K_RIGHT:
+                elif dogodek.key == pygame.K_h or dogodek.key == pygame.K_k:
                     crv.hitrost_vrtenja = 0
+                # Player 2
+                if dogodek.key == pygame.K_LEFT and crv2.hitrost_x < 0:
+                    crv2.stop()
+                elif dogodek.key == pygame.K_RIGHT and crv2.hitrost_x > 0:
+                    crv2.stop()   
+                elif dogodek.key == pygame.K_KP5 or dogodek.key == pygame.K_KP2: 
+                    crv2.hitrost_hitrosti_strela = 0
+                elif dogodek.key == pygame.K_KP1 or dogodek.key == pygame.K_KP3:
+                    crv2.hitrost_vrtenja = 0
             if dogodek.type == pygame.MOUSEBUTTONDOWN:
-                crv.ustreli(); #za debug
-        
+                crv.ustreli()
+            
         # Zganjaj fiziko
         crvi.update()
         skupina.update()

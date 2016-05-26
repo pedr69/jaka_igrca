@@ -42,18 +42,20 @@ class izstrelek(pygame.sprite.Sprite):
                 self.kill();
 
 class osebek(pygame.sprite.Sprite):
-    def __init__(self,ovire=None,metki=None):
+    def __init__(self,ovire=None,metki=None,barva=(0, 179, 60)):
         super().__init__()
         sirina=40
         visina=40
-        zdravje=100;
+        self.zdravje=100;
+        
+
 
         self.smer_strela=45
         self.hitrost_strela=0.5
         self.metki=metki;
 
         self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
-        self.image.fill((238,90,255))
+        self.image.fill(barva)
         self.rect=self.image.get_rect()
         self.ovire = ovire
     
@@ -65,8 +67,16 @@ class osebek(pygame.sprite.Sprite):
         #za metek
         self.hitrost_vrtenja=0
         self.hitrost_hitrosti_strela=0
+
+
         
     def update(self):
+        if self.metki:
+            trki = pygame.sprite.spritecollide(self,self.metki,True)
+            for metek in trki:
+                self.zdravje -= 5
+            if self.zdravje <= 0:
+                self.kill();
         #smer X
         self.rect.x += self.hitrost_x
         if (self.rect.right > SIRINA_EKRANA):
@@ -84,6 +94,7 @@ class osebek(pygame.sprite.Sprite):
                     self.rect.right = ovira.rect.left
               #      self.ground = True;
                 self.hitrost_x = 0
+
 
 
         if self.ground and not self.hodim:
@@ -150,8 +161,12 @@ class osebek(pygame.sprite.Sprite):
                 
     def ustreli(self): #DODELAT
         
-        metek=izstrelek(self.rect.right, self.rect.y,self.smer_strela,self.hitrost_strela,self.hitrost_x,self.hitrost_y,self.ovire)
-        self.metki.add(metek)
+        posx = cos(-pi*self.smer_strela/180)*30 + self.rect.x + 20
+        posy = sin(-pi*self.smer_strela/180)*30 + self.rect.y + 20
+
+        if self.zdravje > 0:
+            metek=izstrelek(posx, posy, self.smer_strela,self.hitrost_strela,self.hitrost_x,self.hitrost_y,self.ovire);
+            self.metki.add(metek);
         
 class zadeva(pygame.sprite.Sprite):
     def __init__(self, x, y, sirina, visina):
