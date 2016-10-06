@@ -3,7 +3,20 @@ from math import sin, cos, pi
 SIRINA_EKRANA= 800
 VISINA_EKRANA= 600
 
+class gej(pygame.sprite.Sprite):
+    def __init__(self,polozaj_x,polozaj_y, smer):
+        super().__init__()
+        self.image=pygame.image.load("puscica.png")
+        self.rect=self.image.get_rect()
 
+        self.rect.x=polozaj_x
+        self.rect_y=polozaj_y
+        pygame.transform.rotate(self.image,smer)
+    def update(self):
+        self.rect.x=polozaj_x
+        self.rect_y=polozaj_y
+        pygame.transform.rotate(self.image,smer)
+        
 class izstrelek(pygame.sprite.Sprite):
     def __init__(self, polozaj_x, polozaj_y, smer_strela,
                  hitrost_strela,crv_hitrost_x,crv_hitrost_y,ovire=None):
@@ -54,8 +67,9 @@ class osebek(pygame.sprite.Sprite):
         self.hitrost_strela=0.5
         self.metki=metki;
 
-        self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
-        self.image.fill(barva)
+        #self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
+        #self.image.fill(barva)
+        self.image=pygame.image.load("crv.png")
         self.rect=self.image.get_rect()
         self.ovire = ovire
     
@@ -74,7 +88,7 @@ class osebek(pygame.sprite.Sprite):
         if self.metki:
             trki = pygame.sprite.spritecollide(self,self.metki,True)
             for metek in trki:
-                self.zdravje -= 5
+                self.zdravje -= 0
             if self.zdravje <= 0:
                 self.kill();
         #smer X
@@ -83,6 +97,9 @@ class osebek(pygame.sprite.Sprite):
             self.rect.right = SIRINA_EKRANA;
         if self.rect.x < 0:
             self.rect.x = 0;
+            
+        gej.polozaj_x=self.rect.x
+        gej.polozaj_y=self.rect.y
 
         if self.ovire:
             trki=pygame.sprite.spritecollide(self,self.ovire,False)
@@ -161,8 +178,8 @@ class osebek(pygame.sprite.Sprite):
                 
     def ustreli(self): #DODELAT
         
-        posx = cos(-pi*self.smer_strela/180)*30 + self.rect.x + 20
-        posy = sin(-pi*self.smer_strela/180)*30 + self.rect.y + 20
+        posx = cos(-pi*self.smer_strela/180)*34 + self.rect.x + 20
+        posy = sin(-pi*self.smer_strela/180)*34 + self.rect.y + 20
 
         if self.zdravje > 0:
             metek=izstrelek(posx, posy, self.smer_strela,self.hitrost_strela,self.hitrost_x,self.hitrost_y,self.ovire);

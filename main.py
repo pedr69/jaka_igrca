@@ -1,12 +1,12 @@
 import pygame
 from math import sin, cos, pi
-from models import SIRINA_EKRANA, VISINA_EKRANA, zadeva, osebek, izstrelek
+from models import SIRINA_EKRANA, VISINA_EKRANA, zadeva, osebek, izstrelek, gej
 
 
 def main():
     pygame.font.init()
     ekran=pygame.display.set_mode([SIRINA_EKRANA,VISINA_EKRANA])
-    pygame.display.set_caption("legendarna igrca")
+    pygame.display.set_caption("marko fegget")
 
     ozadje = zadeva(0, 3*VISINA_EKRANA/4, SIRINA_EKRANA,VISINA_EKRANA/4)
     ploscad = zadeva(50, 350, 200, 20)
@@ -15,12 +15,15 @@ def main():
     skupina=pygame.sprite.Group()
     skupina.add(ozadje)
     skupina.add(ploscad)
-    #skupina.add(ploscad2)
+    skupina.add(ploscad2)
+    overlayi=pygame.sprite.Group()
     metki=pygame.sprite.Group()
     crvi=pygame.sprite.Group()
     crv=osebek(skupina,metki)
     crvi.add(crv)
     crv2 = osebek(skupina,metki,(255, 0, 102))
+    overlay1=gej(crv.rect.x,crv.rect.y,crv.smer_strela)
+    overlayi.add(overlay1)
     ura=pygame.time.Clock()
     crvi.add(crv2)
     konec_zanke=False
@@ -47,13 +50,13 @@ def main():
                 elif dogodek.key == pygame.K_w:
                     crv.skoci()
                 elif dogodek.key == pygame.K_h:
-                    crv.hitrost_vrtenja = 1;
+                    crv.hitrost_vrtenja = 0.7;
                 elif dogodek.key == pygame.K_k:
-                    crv.hitrost_vrtenja = -1;
+                    crv.hitrost_vrtenja = -0.7;
                 elif dogodek.key == pygame.K_u:
-                    crv.hitrost_hitrosti_strela = 0.01
+                    crv.hitrost_hitrosti_strela = 0.007
                 elif dogodek.key == pygame.K_j:
-                    crv.hitrost_hitrosti_strela = -0.01
+                    crv.hitrost_hitrosti_strela = -0.007
                 # Player 2
                 if dogodek.key == pygame.K_LEFT:
                     crv2.pojdi_levo()
@@ -64,13 +67,13 @@ def main():
                 elif dogodek.key == pygame.K_UP:
                     crv2.skoci()
                 elif dogodek.key == pygame.K_KP1:
-                    crv2.hitrost_vrtenja = 1;
+                    crv2.hitrost_vrtenja = 0.7;
                 elif dogodek.key == pygame.K_KP3:
-                    crv2.hitrost_vrtenja = -1;
+                    crv2.hitrost_vrtenja = -0.7;
                 elif dogodek.key == pygame.K_KP5:
-                    crv2.hitrost_hitrosti_strela = 0.01
+                    crv2.hitrost_hitrosti_strela = 0.007
                 elif dogodek.key == pygame.K_KP2:
-                    crv2.hitrost_hitrosti_strela = -0.01
+                    crv2.hitrost_hitrosti_strela = -0.007
             if dogodek.type == pygame.KEYUP:
                 # Player 1
                 if dogodek.key == pygame.K_a and crv.hitrost_x < 0:
@@ -97,6 +100,7 @@ def main():
         crvi.update()
         skupina.update()
         metki.update()
+        overlayi.update()
         # Risanje
         ekran.fill((255,255,255))
         text = font.render("ground: "+str(crv.ground), 1, (10, 10, 10))
@@ -104,6 +108,7 @@ def main():
         skupina.draw(ekran) #narise ozadje
         crvi.draw(ekran) #narise crve
         metki.draw(ekran); #narise metke
+        overlayi.draw(ekran)
         
         pygame.display.flip()
        # print("crv.hitrost_x: "+str(crv.hitrost_x));
