@@ -23,6 +23,7 @@ def main():
     crvi.add(crv)
     crv2 = osebek(skupina,metki,(255, 0, 102))
     peder1=gej(crv.rect.x,crv.rect.y,crv.smer_strela)
+    peder2=gej(crv2.rect.x,crv2.rect.y,crv2.smer_strela)
     pedri.add(peder1)
     ura=pygame.time.Clock()
     crvi.add(crv2)
@@ -34,7 +35,7 @@ def main():
     textpos = text.get_rect()
     textpos.centerx = ekran.get_rect().centerx
     while not konec_zanke:
-        ura.tick(60)
+        ura.tick(10)
         # User input
         for dogodek in pygame.event.get():
             if dogodek.type == pygame.QUIT:
@@ -100,7 +101,8 @@ def main():
         crvi.update()
         skupina.update()
         metki.update()
-        pedri.update()
+        peder1.update(crv.rect.x,crv.rect.y,crv.smer_strela)
+        peder2.update(crv2.rect.x,crv2.rect.y,crv2.smer_strela)
         # Risanje
         ekran.fill((255,255,255))
         text = font.render("ground: "+str(crv.ground), 1, (10, 10, 10))

@@ -14,11 +14,12 @@ class gej(pygame.sprite.Sprite):
         self.polozaj_x=polozaj_x
         self.polozaj_y=polozaj_y
         self.smer=smer
-        pygame.transform.rotate(self.image,smer)
-    def update(self):
-        self.rect.x=self.polozaj_x
-        self.rect_y=self.polozaj_y
-        pygame.transform.rotate(self.image,self.smer)
+        self.image=pygame.transform.rotate(self.image,smer)
+    def update(self,polozaj_x,polozaj_y,smer):
+        self.rect.x=polozaj_x
+        self.rect.y=polozaj_y
+        self.smer=smer
+        self.image=pygame.transform.rotate(self.image,self.smer)
         
 class izstrelek(pygame.sprite.Sprite):
     def __init__(self, polozaj_x, polozaj_y, smer_strela,
