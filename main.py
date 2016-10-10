@@ -16,14 +16,14 @@ def main():
     skupina.add(ozadje)
     skupina.add(ploscad)
     skupina.add(ploscad2)
-    overlayi=pygame.sprite.Group()
+    pedri=pygame.sprite.Group()
     metki=pygame.sprite.Group()
     crvi=pygame.sprite.Group()
     crv=osebek(skupina,metki)
     crvi.add(crv)
     crv2 = osebek(skupina,metki,(255, 0, 102))
-    overlay1=gej(crv.rect.x,crv.rect.y,crv.smer_strela)
-    overlayi.add(overlay1)
+    peder1=gej(crv.rect.x,crv.rect.y,crv.smer_strela)
+    pedri.add(peder1)
     ura=pygame.time.Clock()
     crvi.add(crv2)
     konec_zanke=False
@@ -100,7 +100,7 @@ def main():
         crvi.update()
         skupina.update()
         metki.update()
-        overlayi.update()
+        pedri.update()
         # Risanje
         ekran.fill((255,255,255))
         text = font.render("ground: "+str(crv.ground), 1, (10, 10, 10))
@@ -108,7 +108,7 @@ def main():
         skupina.draw(ekran) #narise ozadje
         crvi.draw(ekran) #narise crve
         metki.draw(ekran); #narise metke
-        overlayi.draw(ekran)
+        pedri.draw(ekran)
         
         pygame.display.flip()
        # print("crv.hitrost_x: "+str(crv.hitrost_x));

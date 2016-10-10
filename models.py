@@ -4,18 +4,21 @@ SIRINA_EKRANA= 800
 VISINA_EKRANA= 600
 
 class gej(pygame.sprite.Sprite):
-    def __init__(self,polozaj_x,polozaj_y, smer):
+    def __init__(self, polozaj_x, polozaj_y, smer):
         super().__init__()
         self.image=pygame.image.load("puscica.png")
         self.rect=self.image.get_rect()
 
         self.rect.x=polozaj_x
         self.rect_y=polozaj_y
+        self.polozaj_x=polozaj_x
+        self.polozaj_y=polozaj_y
+        self.smer=smer
         pygame.transform.rotate(self.image,smer)
     def update(self):
-        self.rect.x=polozaj_x
-        self.rect_y=polozaj_y
-        pygame.transform.rotate(self.image,smer)
+        self.rect.x=self.polozaj_x
+        self.rect_y=self.polozaj_y
+        pygame.transform.rotate(self.image,self.smer)
         
 class izstrelek(pygame.sprite.Sprite):
     def __init__(self, polozaj_x, polozaj_y, smer_strela,
@@ -97,9 +100,6 @@ class osebek(pygame.sprite.Sprite):
             self.rect.right = SIRINA_EKRANA;
         if self.rect.x < 0:
             self.rect.x = 0;
-            
-        gej.polozaj_x=self.rect.x
-        gej.polozaj_y=self.rect.y
 
         if self.ovire:
             trki=pygame.sprite.spritecollide(self,self.ovire,False)
