@@ -13,21 +13,13 @@ class gej(pygame.sprite.Sprite):
         self.rect_y=polozaj_y
         self.polozaj_x=polozaj_x
         self.polozaj_y=polozaj_y
-        self.smer=smer
-        self.image=pygame.transform.rotate(self.image,smer)
+        self.smer_prejsnja=45
     def update(self,polozaj_x,polozaj_y,smer):
+        razlika=smer-self.smer_prejsnja
         self.rect.x=polozaj_x
         self.rect.y=polozaj_y
-        if smer!=self.smer:
-            self.smer=smer
-            self.image=self.rot_center(self.image, self.smer)
-    def rot_center(self, image, angle):
-        orig_rect = image.get_rect()
-        rot_image = pygame.transform.rotate(image, angle)
-        rot_rect = orig_rect.copy()
-        rot_rect.center = rot_image.get_rect().center
-        rot_image = rot_image.subsurface(rot_rect).copy()
-        return rot_image
+        self.image=pygame.transform.rotate(self.image,razlika)
+        self.smer_prejsnja=smer
             
 class izstrelek(pygame.sprite.Sprite):
     def __init__(self, polozaj_x, polozaj_y, smer_strela,
