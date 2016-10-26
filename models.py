@@ -1,7 +1,8 @@
 import pygame
-from math import sin, cos, pi
+from math import sin, cos, pi, atan
 SIRINA_EKRANA= 800
 VISINA_EKRANA= 600
+GRAVITY=0.4
 
 class gej(pygame.sprite.Sprite):
     def __init__(self,polozaj, smer):
@@ -24,12 +25,13 @@ class izstrelek(pygame.sprite.Sprite):
     def __init__(self, polozaj_x, polozaj_y, smer_strela,
                  hitrost_strela,crv_hitrost_x,crv_hitrost_y,ovire=None):
         super().__init__()
-        sirina=5
-        visina=5
+        sirina=6
+        visina=6
         self.ovire=ovire
 
-        self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
-        self.image.fill((0,0,0))
+       # self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
+        self.slika=pygame.image.load("izstrelek2.png")
+        self.image=self.slika
         self.rect=self.image.get_rect()
 
         self.rect.x = polozaj_x
@@ -38,13 +40,10 @@ class izstrelek(pygame.sprite.Sprite):
         self.hitrost_x = cos(pi*smer_strela/180)*hitrost_strela*20  + crv_hitrost_x
         self.hitrost_y = sin(pi*smer_strela/180)*hitrost_strela*-20 + crv_hitrost_y
 
+        self.smer=atan(self.hitrost_x/self.hitrost_y)*180/pi
+        pygame.transform.rotate(self.image,self.smer)
 
     def update(self):
-        #smer x
-        self.rect.x += self.hitrost_x
-            #smer y
-        self.hitrost_y += 0.4
-        self.rect.y += self.hitrost_y
         #ubije metek ce je izven zaslona
         if (self.rect.x >= SIRINA_EKRANA) or (self.rect.x <= 0):
             self.kill();
@@ -56,6 +55,15 @@ class izstrelek(pygame.sprite.Sprite):
             for ovira in trki:
                 #work in progress tle je eksplozija
                 self.kill();
+        #smer x
+        self.rect.x += self.hitrost_x
+            #smer y
+        self.hitrost_y += GRAVITY
+        self.rect.y += self.hitrost_y
+
+        self.image=self.slika
+        self.smer=atan(-self.hitrost_y/self.hitrost_x)*180/pi
+        self.image=pygame.transform.rotate(self.image,self.smer)
 
 class osebek(pygame.sprite.Sprite):
     def __init__(self,ovire=None,metki=None,barva=(0, 179, 60)):
@@ -114,19 +122,18 @@ class osebek(pygame.sprite.Sprite):
 
 
 
-        if self.ground and not self.hodim:
+        if not self.hodim:
             self.hitrost_x = 0;
             
         #smer Yd
         if 0 == self.hitrost_y:
             self.hitrost_y = 2
-        elif self.hitrost_y < 20:
-            self.hitrost_y += 0.4
+        if self.hitrost_y < 20:
+            self.hitrost_y += GRAVITY
         old_y = self.rect.y
-        
-            
-            
         self.rect.y += self.hitrost_y
+
+        
         if self.ovire:
             trki=pygame.sprite.spritecollide(self,self.ovire,False)
             for ovira in trki:
@@ -136,6 +143,7 @@ class osebek(pygame.sprite.Sprite):
                     self.rect.bottom=ovira.rect.top
                     self.ground=True;
                 self.hitrost_y=0
+                
         # Preveri ce je na tleh
         self.rect.y += 2
         if self.ovire:
@@ -145,6 +153,7 @@ class osebek(pygame.sprite.Sprite):
             else:
                 self.ground=False;  
         self.rect.y -= 2
+        
         #za metek
         self.smer_strela +=self.hitrost_vrtenja
         self.smer_strela = self.smer_strela % 360;
@@ -154,24 +163,23 @@ class osebek(pygame.sprite.Sprite):
         if self.hitrost_strela < 0:
             self.hitrost_strela = 0
     def pojdi_levo(self):
-        if self.ground:
-            self.desno=False;
-            self.hitrost_x = -4;
-            self.hodim=True
+        #if self.ground:
+        self.desno=False;
+        self.hitrost_x = -4;
+        self.hodim=True
 
     def pojdi_desno(self):
-        if self.ground:
-            self.desno=True
-            self.hitrost_x = 4
-            self.hodim=True
+        #if self.ground:
+        self.desno=True
+        self.hitrost_x = 4
+        self.hodim=True
 
     def stop(self):        
         self.hodim=False;
-        if self.ground:
-            self.hitrost_x=0
+        #if self.ground:
+        self.hitrost_x=0
 
     def skoci(self):
-
         if self.ground:
             self.hitrost_y = -10
             self.ground= False;
