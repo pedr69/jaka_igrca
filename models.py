@@ -30,7 +30,7 @@ class izstrelek(pygame.sprite.Sprite):
         self.ovire=ovire
 
        # self.image=pygame.Surface((sirina,visina),pygame.SRCALPHA)
-        self.slika=pygame.image.load("izstrelek2.png")
+        self.slika=pygame.image.load("izstrelek.png")
         self.image=self.slika
         self.rect=self.image.get_rect()
 
